@@ -139,22 +139,32 @@
       input.value = "";
       renderMessages();
 
-      const res = await fetch("https://api.openai.com/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": "Bearer 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"
-        },
-        body: JSON.stringify({
-          model: "gpt-3.5-turbo",
-          messages: messages
-        })
-      });
+      try {
+        const res = await fetch("https://api.openai.com/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer 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"
+          },
+          body: JSON.stringify({
+            model: "gpt-3.5-turbo",
+            messages: messages
+          })
+        });
 
-      const data = await res.json();
-      const reply = data.choices[0].message.content;
-      messages.push({ role: "assistant", content: reply });
-      renderMessages();
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+
+        const data = await res.json();
+        const reply = data.choices[0].message.content;
+        messages.push({ role: "assistant", content: reply });
+        renderMessages();
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        messages.push({ role: "assistant", content: "Bir şeyler ters gitti. Lütfen tekrar deneyin." });
+        renderMessages();
+      }
     }
 
     document.getElementById("input").addEventListener("keydown", e => {
